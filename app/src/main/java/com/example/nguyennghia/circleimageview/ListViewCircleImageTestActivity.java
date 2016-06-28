@@ -24,7 +24,6 @@ public class ListViewCircleImageTestActivity extends AppCompatActivity {
         lvAuthor = (ListView) findViewById(R.id.lv_author);
 
         mAvartarBox = new ArrayList<>();
-
         for (int i = 0; i < 100; i += 5) {
             Picture p0 = new Picture();
             p0.setUrl("https://freeiconshop.com/files/edd/person-flat.png");
@@ -59,27 +58,6 @@ public class ListViewCircleImageTestActivity extends AppCompatActivity {
 
         mAdapter = new AvatarBoxAdapter(this, mAvartarBox);
         lvAuthor.setAdapter(mAdapter);
-
-//        lvAuthor.setOnScrollListener(new AbsListView.OnScrollListener() {
-//            @Override
-//            public void onScrollStateChanged(AbsListView view, int scrollState) {
-//                Log.i(TAG, "onScrollStateChanged: ");
-//                if(scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING || scrollState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL)
-//                    mAdapter.setEnableLoad(false);
-//                else{
-//                    mAdapter.setEnableLoad(true);
-//                    mAdapter.notifyDataSetChanged();
-//                    Log.i(TAG, "onScrollStateChanged: " + "notifyDataSetChanged");
-//                }
-//            }
-//
-//            @Override
-//            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-//
-//            }
-//        });
-
-
 
 
     }
