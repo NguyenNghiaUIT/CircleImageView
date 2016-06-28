@@ -18,5 +18,4 @@ public class MainActivity extends AppCompatActivity {
         else if(v.getId() == R.id.btn_listview_test)
             startActivity(new Intent(this, ListViewCircleImageTestActivity.class));
     }
-
 }
