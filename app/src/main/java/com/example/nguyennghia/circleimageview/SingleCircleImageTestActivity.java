@@ -177,7 +177,6 @@ public class SingleCircleImageTestActivity extends AppCompatActivity implements 
                     ci5.drawBitmapAt(bm1, 0, false);
                     ci5.drawBitmapAt(bm2, 1, false);
                     ci5.drawBitmapAt(bm3, 2, false);
-
                 }
                 break;
             default:
