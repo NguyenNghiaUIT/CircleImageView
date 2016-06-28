@@ -31,16 +31,11 @@ public class AvatarBoxAdapter extends ArrayAdapter<AvatarBox> {
     private static final String TAG = AvatarBoxAdapter.class.getSimpleName();
     private Context mContext;
     private List<AvatarBox> mAvatarBox;
-    private boolean mEnableLoad = true;
 
     public AvatarBoxAdapter(Context context, List<AvatarBox> objects) {
         super(context, 0, objects);
         mContext = context;
         mAvatarBox = objects;
-    }
-
-    public void setEnableLoad(boolean flags) {
-        mEnableLoad = flags;
     }
 
     @Override
