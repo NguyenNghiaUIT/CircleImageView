@@ -10,7 +10,10 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Shader;
+import android.graphics.Typeface;
+import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import java.util.List;
@@ -20,17 +23,37 @@ import java.util.List;
  */
 public class CircleImage extends View {
     private static final String TAG = CircleImage.class.getSimpleName();
+    private static final boolean DEBUG = false;
     private static final int ALPHA_DEFAULT = 255;
     private float mHeight;
     private float mWidth;
 
     private int mSize;
-    private Paint[] mPaints;
-    private Paint[] mPaintDefaults;
+    private Paint[] mPaints; // using for draw bitmap
+    private Paint[] mPaintDefaults; //using for defaul color when bitmap not fill
+
+    private TextPaint mTitlePaint;
+    private TextPaint mSubTitlePaint;
+    private TextPaint mStatusPaint;
+    private String mStatusText = "4 hours";
+    private String mTitleText = "Title";
+    private String mSubTitleText = "Subtitle";
+
+    private Paint mUnReadPaint; //using for draw circle Unread Count Notificition
+    private Paint mUnReadPaintText; //using for draw text in circle Unread Count Notification
+    private String mUnReadText;
+    private float mPaddingUnread;
+    private float mTextSizeUnread;
+    private Rect mUnReadTextBound;
 
     private float mWidthImage;
     private float mHeightImage;
     private Paint mPaintText;
+
+    private float mPaddingLeftRight;
+    private float mPaddingTopBottom;
+    private float mTitleMarginLeft;
+    private float mTitleMarginTop;
 
     private float mHeightDraw;
     private Resources mResource;
@@ -60,6 +83,7 @@ public class CircleImage extends View {
     private boolean mIsDrawBitmap1;
     private boolean mIsDrawBitmap2;
     private boolean mIsDrawBitmap3;
+    private boolean mIsDrawUnRead;
 
     private ImageType mImageType;
 
@@ -82,12 +106,55 @@ public class CircleImage extends View {
     public CircleImage(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mResource = getResources();
+        mTextSizeUnread = mResource.getDimension(R.dimen.text_unread_size);
+        mPaddingLeftRight = mResource.getDimension(R.dimen.padding_left_right_chat_view);
+        mPaddingTopBottom = mResource.getDimension(R.dimen.padding_top_bottom_chat_view);
+        mPaddingUnread = mResource.getDimension(R.dimen.padding_unread_size);
+        mTitleMarginLeft = mResource.getDimension(R.dimen.title_margin_left);
+        mTitleMarginTop = mResource.getDimension(R.dimen.title_margin_top);
+
         mPaintDefaults = new Paint[4];
         for (int i = 0; i < 4; i++) {
             mPaintDefaults[i] = new Paint();
             mPaintDefaults[i].setColor(Color.parseColor("#95a5a6"));
             mPaintDefaults[i].setAntiAlias(true);
         }
+
+        mUnReadPaint = new Paint();
+        mUnReadPaint.setColor(Color.RED);
+        mUnReadPaint.setAntiAlias(true);
+
+        mUnReadPaintText = new Paint();
+        mUnReadPaintText.setTextSize(mTextSizeUnread);
+        mUnReadPaintText.setColor(Color.WHITE);
+        mUnReadPaintText.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        mUnReadPaintText.setAntiAlias(true);
+
+        mTitlePaint = new TextPaint();
+        mTitlePaint.setAntiAlias(true);
+        mTitlePaint.setTextSize(50);
+        mTitlePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        mTitlePaint.setColor(Color.parseColor("#34495e"));
+
+        mSubTitlePaint = new TextPaint();
+        mSubTitlePaint.setAntiAlias(true);
+        mSubTitlePaint.setTextSize(50);
+        mSubTitlePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        mSubTitlePaint.setColor(Color.parseColor("#95a5a6"));
+
+        mStatusPaint = new TextPaint();
+        mStatusPaint.setAntiAlias(true);
+        mStatusPaint.setTextSize(50);
+        mStatusPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        mStatusPaint.setColor(Color.parseColor("#34495e"));
+
+
+    }
+
+    public void drawUnRead(String text) {
+        mUnReadText = text;
+        mIsDrawUnRead = true;
+        invalidate();
     }
 
     public void reset() {
@@ -95,11 +162,27 @@ public class CircleImage extends View {
         mIsDrawBitmap0 = mIsDrawBitmap1 = mIsDrawBitmap2 = mIsDrawBitmap3 = false;
         mIsAnimation0 = mIsAnimation1 = mIsAnimation2 = mIsAnimation3 = false;
         currentDefaultAlphal0 = currentDefaultAlphal1 = currentDefaultAlphal2 = currentDefaultAlphal3 = ALPHA_DEFAULT;
+        mText = null;
+    }
+
+    public void setTitle(String text) {
+        mTitleText = text;
+        invalidate();
+    }
+
+    public void setSubTitle(String text) {
+        mSubTitleText = text;
+    }
+
+    public void setStatusText(String text) {
+        mStatusText = text;
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        setMeasuredDimension((int) mWidth, (int) mHeight);
+        if (mWidth == 0.0f || mHeight == 0.0f)
+            mHeight = mWidth = mResource.getDimension(R.dimen.height_width_circle_image_view);
+        setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), (int) (mHeight + mPaddingTopBottom * 2));
     }
 
     private Bitmap centerCropImage(Bitmap src, float widthView, float heightView) {
@@ -148,15 +231,36 @@ public class CircleImage extends View {
             mImageType = ImageType.TYPE_5;
         }
 
-        mPaintText = new Paint();
-        mPaintText.setAntiAlias(true);
-        mPaintText.setTextSize(50);
-        mPaintText.setColor(Color.BLACK);
-        mText = String.valueOf(mSize);
+        if (mSize > 4) {
+            mPaintText = new Paint();
+            mPaintText.setAntiAlias(true);
+            mPaintText.setTextSize(50);
+            mPaintText.setColor(Color.parseColor("#ecf0f1"));
+            mText = String.valueOf(mSize);
+        }
+        invalidate();
     }
 
     public int getImageType() {
         return mImageType.ordinal();
+    }
+
+    //Method only using for draw one bitmap and text
+    public void setBitmapUrl(String url, String text) {
+        mSize = 1;
+        mPaints = new Paint[1];
+        mPaints[0] = new Paint();
+        mPaints[0].setAntiAlias(true);
+        mPaints[0].setAlpha(0);
+
+        mHeight = mWidth = mResource.getDimension(R.dimen.height_width_circle_image_view);
+        mWidthImage = mHeightImage = mResource.getDimension(R.dimen.height_width_circle_image_view_case_2);
+
+        mPaintText = new Paint();
+        mPaintText.setAntiAlias(true);
+        mPaintText.setTextSize(50);
+        mPaintText.setColor(Color.BLACK);
+        mText = text;
     }
 
     public void setBitmapUrls(String... urls) {
@@ -167,8 +271,8 @@ public class CircleImage extends View {
             mPaints[i].setAntiAlias(true);
             mPaints[i].setAlpha(0);
         }
-        mHeight = mWidth = mResource.getDimension(R.dimen.height_width_circle_image_view);
 
+        mHeight = mWidth = mResource.getDimension(R.dimen.height_width_circle_image_view);
         if (mSize == 1) {
             mWidthImage = mHeightImage = mWidth;
         } else if (mSize == 2) {
@@ -182,20 +286,20 @@ public class CircleImage extends View {
             mWidthImage = mHeightImage = mResource.getDimension(R.dimen.height_width_circle_image_view_case_3);
         }
 
-        mPaintText = new Paint();
-        mPaintText.setAntiAlias(true);
-        mPaintText.setTextSize(50);
-        mPaintText.setColor(Color.BLACK);
-        mText = String.valueOf(mSize - 3);
+        if (mSize > 4) {
+            mPaintText = new Paint();
+            mPaintText.setAntiAlias(true);
+            mPaintText.setTextSize(50);
+            mPaintText.setColor(Color.BLACK);
+            mText = String.valueOf(mSize);
+        }
     }
-
 
     public void drawBitmapAt(Bitmap bitmap, int index, boolean animation) {
         if (bitmap == null)
             throw new IllegalArgumentException("Bitmap not null");
         if (index > mSize - 1)
             return;
-
 
         mPaints[index].setShader(new BitmapShader(centerCropImage(bitmap, mWidthImage, mHeightImage), Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
         switch (index) {
@@ -221,30 +325,67 @@ public class CircleImage extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-//        Log.i(TAG, "onDraw");
+        if (DEBUG)
+            Log.d(TAG, "onDraw");
+
+        canvas.translate(mPaddingLeftRight, mPaddingTopBottom);
+        float radius = 0.0f;
+        float tranX = 0.0f;
+        float tranY = 0.0f;
+
         if (mSize == 1) {
-            float radius = mWidthImage / 2.0f;
-            if (!mIsDrawBitmap0) {
-                mPaintDefaults[0].setAlpha(ALPHA_DEFAULT);
-                canvas.drawCircle(radius, radius, radius, mPaintDefaults[0]);
-            } else {
-                if (mIsAnimation0) {
-                    processAnimationBitmap0(canvas, radius, 0, 0);
+            if (mText == null) {
+                radius = mWidthImage / 2.0f;
+                if (!mIsDrawBitmap0) {
+                    mPaintDefaults[0].setAlpha(ALPHA_DEFAULT);
+                    canvas.drawCircle(radius, radius, radius, mPaintDefaults[0]);
                 } else {
-                    mPaints[0].setAlpha(ALPHA_DEFAULT);
-                    canvas.drawCircle(radius, radius, radius, mPaints[0]);
+                    if (mIsAnimation0) {
+                        processAnimationBitmap0(canvas, radius, 0, 0);
+                    } else {
+                        mPaints[0].setAlpha(ALPHA_DEFAULT);
+                        canvas.drawCircle(radius, radius, radius, mPaints[0]);
+                    }
                 }
+            } else {
+                Log.i(TAG, "onDraw: " + "Case 2");
+                radius = mWidthImage / 2.0f;
+                tranX = mWidth - mWidthImage;
+                tranY = mHeight - mHeightImage;
+                if (!mIsDrawBitmap0) {
+                    canvas.translate(tranX, 0);
+                    mPaintDefaults[0].setAlpha(ALPHA_DEFAULT);
+                    canvas.drawCircle(radius, radius, radius, mPaintDefaults[0]); //top right
+                } else {
+                    if (mIsAnimation0) {
+                        Log.i(TAG, "onDraw: " + "Animation");
+                        processAnimationBitmap0(canvas, radius, tranX, tranY);
+                    } else {
+                        mPaints[0].setAlpha(ALPHA_DEFAULT);
+                        canvas.translate(tranX, 0);
+                        canvas.drawCircle(radius, radius, radius, mPaints[0]); //top right
+                    }
+                }
+
+                float widthTextMeasure = mPaintText.measureText(mText, 0, mText.length());
+                if (mRectBoundText == null)
+                    mRectBoundText = new Rect();
+                mPaintText.getTextBounds(mText, 0, mText.length(), mRectBoundText);
+                canvas.translate(-tranX, tranY);
+                canvas.drawCircle(radius, radius, radius, mPaintDefaults[3]); //right bottom
+                canvas.drawText(mText, radius - (widthTextMeasure / 2), radius + mRectBoundText.height() / 2, mPaintText);
             }
         } else if (mSize == 2) {
-            float radius = mWidthImage / 2.0f;
-            float tranX = mWidth - mWidthImage;
-            float tranY = mHeight - mHeightImage;
+            radius = mWidthImage / 2.0f;
+            tranX = mWidth - mWidthImage;
+            tranY = mHeight - mHeightImage;
             if (!mIsDrawBitmap0) {
                 canvas.translate(tranX, 0);
                 mPaintDefaults[0].setAlpha(ALPHA_DEFAULT);
                 canvas.drawCircle(radius, radius, radius, mPaintDefaults[0]); //top right
             } else {
                 if (mIsAnimation0) {
+
                     processAnimationBitmap0(canvas, radius, tranX, tranY);
                 } else {
                     mPaints[0].setAlpha(ALPHA_DEFAULT);
@@ -265,11 +406,11 @@ public class CircleImage extends View {
                     canvas.drawCircle(radius, radius, radius, mPaints[1]); //bottom left
                 }
             }
-
+            canvas.translate(0, -tranY);
         } else if (mSize == 3) {
-            float radius = mWidthImage / 2.0f;
-            float tranX = (mWidth / 2) - radius;
-            float tranY = (mHeight - mHeightDraw) / 2.0f;
+            radius = mWidthImage / 2.0f;
+            tranX = (mWidth / 2) - radius;
+            tranY = (mHeight - mHeightDraw) / 2.0f;
 
             if (!mIsDrawBitmap0) {
                 canvas.translate(tranX, tranY);
@@ -312,11 +453,10 @@ public class CircleImage extends View {
                     canvas.drawCircle(radius, radius, radius, mPaints[2]); //right
                 }
             }
+            canvas.translate(-(mWidth - mWidthImage), -(mHeightImage - tranY) - ((mHeight - mHeightDraw) / 2.0f));
 
         } else if (mSize == 4) {
-            float radius = mWidthImage / 2.0f;
-            float tranX;
-            float tranY;
+            radius = mWidthImage / 2.0f;
             tranX = mWidth - mWidthImage;
             tranY = mHeight - mHeightImage;
 
@@ -372,10 +512,9 @@ public class CircleImage extends View {
                     canvas.drawCircle(radius, radius, radius, mPaints[3]); //right bottom
                 }
             }
+            canvas.translate(-tranX, -tranY);
         } else {
-            float radius = mWidthImage / 2.0f;
-            float tranX;
-            float tranY;
+            radius = mWidthImage / 2.0f;
             tranX = mWidth - mWidthImage;
             tranY = mHeight - mHeightImage;
 
@@ -404,6 +543,7 @@ public class CircleImage extends View {
                 }
             }
 
+
             if (!mIsDrawBitmap2) {
                 canvas.translate(-tranX, tranY);
                 mPaintDefaults[2].setAlpha(ALPHA_DEFAULT);
@@ -417,15 +557,54 @@ public class CircleImage extends View {
                     canvas.drawCircle(radius, radius, radius, mPaints[2]); //left bottom
                 }
             }
-            float widthTextMeasure = mPaintText.measureText(mText, 0, mText.length());
-            if (mRectBoundText == null)
-                mRectBoundText = new Rect();
-            mPaintText.getTextBounds(mText, 0, mText.length(), mRectBoundText);
-            canvas.translate(tranX, 0);
-            canvas.drawCircle(radius, radius, radius, mPaintDefaults[3]); //right bottom
-            canvas.drawText(mText, radius - (widthTextMeasure / 2), radius + mRectBoundText.height() / 2, mPaintText);
+
+            if (mText != null) {
+                float widthTextMeasure = mPaintText.measureText(mText, 0, mText.length());
+                if (mRectBoundText == null)
+                    mRectBoundText = new Rect();
+                mPaintText.getTextBounds(mText, 0, mText.length(), mRectBoundText);
+                canvas.translate(tranX, 0);
+                canvas.drawCircle(radius, radius, radius, mPaintDefaults[3]); //right bottom
+                canvas.drawText(mText, radius - (widthTextMeasure / 2), radius + mRectBoundText.height() / 2, mPaintText);
+            }
+            canvas.translate(-tranX, -tranY);
         }
+
+        // TODO: 29/06/2016 Draw unread count message
+//
+        if (mIsDrawUnRead) {
+            if (mUnReadTextBound == null)
+                mUnReadTextBound = new Rect();
+            float widthMeasureText = mUnReadPaintText.measureText(mUnReadText, 0, mUnReadText.length());
+            mUnReadPaintText.getTextBounds(mUnReadText, 0, mUnReadText.length(), mUnReadTextBound);
+            Log.e(TAG, "onDraw: " + "widthMeasureText: " + widthMeasureText);
+            Log.e(TAG, "onDraw: " + "WidthBound" + mUnReadTextBound.width());
+            Log.e(TAG, "onDraw: " + "HeightBound" + mUnReadTextBound.height());
+            float height = mTextSizeUnread + (mPaddingUnread * 2.0f);
+            Log.i(TAG, "onDraw: " + height);
+            radius = height / 2.0f;
+            canvas.translate(mWidth - height, 0);
+            canvas.drawCircle(radius, radius, radius, mUnReadPaint);
+
+            float x = (height - widthMeasureText) / 2.0f;
+            float y = radius + mTextSizeUnread / 2.0f;
+            canvas.drawText(mUnReadText, x, y, mUnReadPaintText);
+            canvas.translate(-(mWidth - height), 0);
+        }
+
+        // TODO: 29/06/2016 Draw Status
+
+        // TODO: 29/06/2016 Draw Title
+        canvas.translate(mWidth + mTitleMarginLeft, 0);
+        canvas.drawText(mTitleText, 0, /*mPaddingTopBottom + mTitleMarginTop*/0, mTitlePaint);
+
+
+        // TODO: 29/06/2016 Draw SubTitle
+        canvas.translate(0, 100);
+        mUnReadPaintText.setColor(Color.BLACK);
+        canvas.drawText(mSubTitleText, 0, 100, mSubTitlePaint);
     }
+
 
     private void processAnimationBitmap3(Canvas canvas, float radius, float tranX, float tranY) {
         if (mSize == 4) {
@@ -538,19 +717,38 @@ public class CircleImage extends View {
 
     private void processAnimationBitmap0(Canvas canvas, float radius, float tranX, float tranY) {
         if (mSize == 1) {
-            if (currentDefaultAlphal0 < 0)
-                currentDefaultAlphal0 = 0;
-            mPaintDefaults[0].setAlpha(currentDefaultAlphal0);
-            canvas.drawCircle(radius, radius, radius, mPaintDefaults[0]);
-            if (currentAlpha0 >= ALPHA_DEFAULT) {
-                currentAlpha0 = ALPHA_DEFAULT;
-            }
-            mPaints[0].setAlpha(currentAlpha0);
-            canvas.drawCircle(radius, radius, radius, mPaints[0]);
-            if (currentAlpha0 < 255) {
-                currentAlpha0 += ALPHA_STEP;
-                currentDefaultAlphal0 -= ALPHA_STEP;
-                postInvalidateDelayed(TIME_REFESH);
+            if (mText == null) {
+                if (currentDefaultAlphal0 < 0)
+                    currentDefaultAlphal0 = 0;
+                mPaintDefaults[0].setAlpha(currentDefaultAlphal0);
+                canvas.drawCircle(radius, radius, radius, mPaintDefaults[0]);
+                if (currentAlpha0 >= ALPHA_DEFAULT) {
+                    currentAlpha0 = ALPHA_DEFAULT;
+                }
+                mPaints[0].setAlpha(currentAlpha0);
+                canvas.drawCircle(radius, radius, radius, mPaints[0]);
+                if (currentAlpha0 < 255) {
+                    currentAlpha0 += ALPHA_STEP;
+                    currentDefaultAlphal0 -= ALPHA_STEP;
+                    postInvalidateDelayed(TIME_REFESH);
+                }
+            } else {
+                if (currentDefaultAlphal0 < 0)
+                    currentDefaultAlphal0 = 0;
+                mPaintDefaults[0].setAlpha(currentDefaultAlphal0);
+                canvas.translate(tranX, 0);
+                canvas.drawCircle(radius, radius, radius, mPaintDefaults[0]);
+
+                if (currentAlpha0 > ALPHA_DEFAULT)
+                    currentAlpha0 = ALPHA_DEFAULT;
+                mPaints[0].setAlpha(currentAlpha0);
+                canvas.drawCircle(radius, radius, radius, mPaints[0]);
+
+                if (currentAlpha0 < 255) {
+                    currentAlpha0 += ALPHA_STEP;
+                    currentDefaultAlphal0 -= ALPHA_STEP;
+                    postInvalidateDelayed(TIME_REFESH);
+                }
             }
         } else if (mSize == 2) {
             if (currentDefaultAlphal0 < 0)

@@ -73,7 +73,10 @@ public class Picture {
 
     public void setUrl(List<String> urls) {
         int size = urls.size();
-        this.mUrls = urls;
+        this.mUrls = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            mUrls.add(urls.get(i));
+        }
         if (size > 4) {
             mBitmaps = new Bitmap[3];
             mLoadeds = new boolean[3];

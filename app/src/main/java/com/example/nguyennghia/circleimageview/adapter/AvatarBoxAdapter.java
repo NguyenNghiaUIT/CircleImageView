@@ -27,6 +27,8 @@ import java.util.List;
 /**
  * Created by nguyennghia on 27/06/2016.
  */
+
+
 public class AvatarBoxAdapter extends ArrayAdapter<AvatarBox> {
     private static final String TAG = AvatarBoxAdapter.class.getSimpleName();
     private Context mContext;
@@ -45,25 +47,20 @@ public class AvatarBoxAdapter extends ArrayAdapter<AvatarBox> {
         final AvatarBox author = mAvatarBox.get(position);
         final Picture picture = author.getPictures();
 
-        for (int i = 0; i < mAvatarBox.size(); i++) {
-            Log.i(TAG, "AvatarBox: " + i);
-            mAvatarBox.get(i).getPictures().toString();
-        }
-
         if (convertView == null) {
             LayoutInflater li = LayoutInflater.from(mContext);
             convertView = li.inflate(R.layout.author_row_item, parent, false);
             viewHolder = new ViewHolder();
             viewHolder.ciAvaAuthor = (CircleImage) convertView.findViewById(R.id.ci_ava_author);
-            viewHolder.tvAuthor = (TextView) convertView.findViewById(R.id.tv_author_name);
             convertView.setTag(viewHolder);
         } else {
+            Log.i(TAG, "getView: " + "Tai su dung");
             viewHolder = (ViewHolder) convertView.getTag();
             viewHolder.ciAvaAuthor.reset();
         }
 
         viewHolder.ciAvaAuthor.setBitmapUrl(picture.getUrls());
-        viewHolder.tvAuthor.setText(author.getName());
+
 
         int size = picture.getUrls().size() > 4 ? 3 : picture.getUrls().size();
         for (int i = 0; i < size; i++) {

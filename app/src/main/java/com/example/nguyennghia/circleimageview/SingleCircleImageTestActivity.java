@@ -39,11 +39,13 @@ public class SingleCircleImageTestActivity extends AppCompatActivity implements 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_circle_image_test);
 
+
         ci1 = (CircleImage) findViewById(R.id.ci_1);
         ci2 = (CircleImage) findViewById(R.id.ci_2);
         ci3 = (CircleImage) findViewById(R.id.ci_3);
         ci4 = (CircleImage) findViewById(R.id.ci_4);
         ci5 = (CircleImage) findViewById(R.id.ci_5);
+
 
         cb1 = (CheckBox) findViewById(R.id.cb_1);
         cb2 = (CheckBox) findViewById(R.id.cb_2);
@@ -66,7 +68,7 @@ public class SingleCircleImageTestActivity extends AppCompatActivity implements 
         bm1 = BitmapFactory.decodeResource(getResources(), R.drawable.ava);
         bm2 = BitmapFactory.decodeResource(getResources(), R.drawable.ava1);
         bm3 = BitmapFactory.decodeResource(getResources(), R.drawable.ava2);
-        bm4 = BitmapFactory.decodeResource(getResources(), R.drawable.ava4);
+        bm4 = BitmapFactory.decodeResource(getResources(), R.drawable.ava1);
 
 
         ci1.setBitmapUrls("url0");
@@ -87,6 +89,7 @@ public class SingleCircleImageTestActivity extends AppCompatActivity implements 
                     ci1.drawBitmapAt(bm1, 0, true);
                 else
                     ci1.drawBitmapAt(bm1, 0, false);
+                ci1.drawUnRead("N");
                 break;
             case R.id.btn_2:
                 if (cb2.isChecked()) {
@@ -101,6 +104,7 @@ public class SingleCircleImageTestActivity extends AppCompatActivity implements 
                     ci2.drawBitmapAt(bm1, 0, false);
                     ci2.drawBitmapAt(bm2, 1, false);
                 }
+                ci2.drawUnRead("1");
                 break;
             case R.id.btn_3:
                 if (cb3.isChecked()) {
@@ -124,6 +128,7 @@ public class SingleCircleImageTestActivity extends AppCompatActivity implements 
                     ci3.drawBitmapAt(bm3, 2, false);
 
                 }
+                ci3.drawUnRead("2");
                 break;
             case R.id.btn_4:
                 if (cb4.isChecked()) {
@@ -156,6 +161,7 @@ public class SingleCircleImageTestActivity extends AppCompatActivity implements 
                     ci4.drawBitmapAt(bm3, 2, false);
                     ci4.drawBitmapAt(bm4, 3, false);
                 }
+                ci4.drawUnRead("1");
                 break;
             case R.id.btn_5:
                 if (cb5.isChecked()) {
@@ -178,6 +184,7 @@ public class SingleCircleImageTestActivity extends AppCompatActivity implements 
                     ci5.drawBitmapAt(bm2, 1, false);
                     ci5.drawBitmapAt(bm3, 2, false);
                 }
+                ci5.drawUnRead("5+");
                 break;
             default:
                 break;
