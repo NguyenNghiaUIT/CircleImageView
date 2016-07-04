@@ -60,7 +60,10 @@ public class AvatarBoxAdapter extends ArrayAdapter<AvatarBox> {
         }
 
         viewHolder.ciAvaAuthor.setBitmapUrl(picture.getUrls());
-
+        viewHolder.ciAvaAuthor.drawUnRead("5");
+        viewHolder.ciAvaAuthor.setStatus("10 minutes");
+        viewHolder.ciAvaAuthor.setTitle("Nguyễn Nghĩa, Hoàng Ánh, Nguyễn Sơn");
+        viewHolder.ciAvaAuthor.setContent("Để trưa mai t đi gửi đồ về rồi lấy luôn");
 
         int size = picture.getUrls().size() > 4 ? 3 : picture.getUrls().size();
         for (int i = 0; i < size; i++) {

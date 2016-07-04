@@ -12,6 +12,7 @@ import android.graphics.Rect;
 import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.text.TextPaint;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -28,16 +29,22 @@ public class CircleImage extends View {
     private float mHeight;
     private float mWidth;
 
+    private Paint mPaintTest;
+
     private int mSize;
     private Paint[] mPaints; // using for draw bitmap
     private Paint[] mPaintDefaults; //using for defaul color when bitmap not fill
 
     private TextPaint mTitlePaint;
-    private TextPaint mSubTitlePaint;
+    private TextPaint mContentPaint;
     private TextPaint mStatusPaint;
-    private String mStatusText = "4 hours";
-    private String mTitleText = "Title";
-    private String mSubTitleText = "Subtitle";
+    private String mStatusText; /*"4 minutes";*/
+    private String mTitleText; /*= "Help people interested in this repository understand your project by adding a README.";*/
+    private String mContentText; /* = "Pixels - corresponds to actual pixels on the screen.";*/
+
+    private float mTittleSize;
+    private float mContentSize;
+    private float mStatusSize;
 
     private Paint mUnReadPaint; //using for draw circle Unread Count Notificition
     private Paint mUnReadPaintText; //using for draw text in circle Unread Count Notification
@@ -52,8 +59,10 @@ public class CircleImage extends View {
 
     private float mPaddingLeftRight;
     private float mPaddingTopBottom;
-    private float mTitleMarginLeft;
     private float mTitleMarginTop;
+
+    private Paint mPaintDivider;
+
 
     private float mHeightDraw;
     private Resources mResource;
@@ -87,6 +96,7 @@ public class CircleImage extends View {
 
     private ImageType mImageType;
 
+
     public enum ImageType {
         TYPE_1, //represent for 1 bitmap in view
         TYPE_2,  //represent for 2 bitmap in view
@@ -106,12 +116,16 @@ public class CircleImage extends View {
     public CircleImage(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mResource = getResources();
-        mTextSizeUnread = mResource.getDimension(R.dimen.text_unread_size);
+        mTextSizeUnread = mResource.getDimension(R.dimen.text_unread_font_size);
         mPaddingLeftRight = mResource.getDimension(R.dimen.padding_left_right_chat_view);
         mPaddingTopBottom = mResource.getDimension(R.dimen.padding_top_bottom_chat_view);
         mPaddingUnread = mResource.getDimension(R.dimen.padding_unread_size);
-        mTitleMarginLeft = mResource.getDimension(R.dimen.title_margin_left);
         mTitleMarginTop = mResource.getDimension(R.dimen.title_margin_top);
+
+        //get font size from dimen
+        mTittleSize = mResource.getDimension(R.dimen.title_font_size);
+        mContentSize = mResource.getDimension(R.dimen.content_font_size);
+        mStatusSize = mResource.getDimension(R.dimen.status_font_size);
 
         mPaintDefaults = new Paint[4];
         for (int i = 0; i < 4; i++) {
@@ -132,23 +146,22 @@ public class CircleImage extends View {
 
         mTitlePaint = new TextPaint();
         mTitlePaint.setAntiAlias(true);
-        mTitlePaint.setTextSize(50);
-        mTitlePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        mTitlePaint.setTextSize(mTittleSize);
         mTitlePaint.setColor(Color.parseColor("#34495e"));
 
-        mSubTitlePaint = new TextPaint();
-        mSubTitlePaint.setAntiAlias(true);
-        mSubTitlePaint.setTextSize(50);
-        mSubTitlePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-        mSubTitlePaint.setColor(Color.parseColor("#95a5a6"));
+        mContentPaint = new TextPaint();
+        mContentPaint.setAntiAlias(true);
+        mContentPaint.setTextSize(mContentSize);
+        mContentPaint.setColor(Color.parseColor("#95a5a6"));
 
         mStatusPaint = new TextPaint();
         mStatusPaint.setAntiAlias(true);
-        mStatusPaint.setTextSize(50);
-        mStatusPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        mStatusPaint.setTextSize(mStatusSize);
         mStatusPaint.setColor(Color.parseColor("#34495e"));
 
-
+        mPaintDivider = new Paint();
+        mPaintDivider.setStrokeWidth(1);
+        mPaintDivider.setColor(Color.parseColor("#7f8c8d"));
     }
 
     public void drawUnRead(String text) {
@@ -162,6 +175,8 @@ public class CircleImage extends View {
         mIsDrawBitmap0 = mIsDrawBitmap1 = mIsDrawBitmap2 = mIsDrawBitmap3 = false;
         mIsAnimation0 = mIsAnimation1 = mIsAnimation2 = mIsAnimation3 = false;
         currentDefaultAlphal0 = currentDefaultAlphal1 = currentDefaultAlphal2 = currentDefaultAlphal3 = ALPHA_DEFAULT;
+        mIsDrawUnRead = false;
+        mTitleText = mContentText = mStatusText = null;
         mText = null;
     }
 
@@ -170,12 +185,27 @@ public class CircleImage extends View {
         invalidate();
     }
 
-    public void setSubTitle(String text) {
-        mSubTitleText = text;
+    public void setContent(String text) {
+        mContentText = text;
     }
 
-    public void setStatusText(String text) {
+    public void setStatus(String text) {
         mStatusText = text;
+    }
+
+    public void setTitleStyle(Typeface tf) {
+        mTitlePaint.setTypeface(tf);
+        invalidate();
+    }
+
+    public void setContentStyle(Typeface tf) {
+        mContentPaint.setTypeface(tf);
+        invalidate();
+    }
+
+    public void setStatusStyle(Typeface tf) {
+        mStatusPaint.setTypeface(tf);
+        invalidate();
     }
 
     @Override
@@ -259,7 +289,7 @@ public class CircleImage extends View {
         mPaintText = new Paint();
         mPaintText.setAntiAlias(true);
         mPaintText.setTextSize(50);
-        mPaintText.setColor(Color.BLACK);
+        mPaintText.setColor(Color.parseColor("#ecf0f1"));
         mText = text;
     }
 
@@ -290,7 +320,7 @@ public class CircleImage extends View {
             mPaintText = new Paint();
             mPaintText.setAntiAlias(true);
             mPaintText.setTextSize(50);
-            mPaintText.setColor(Color.BLACK);
+            mPaintText.setColor(Color.parseColor("#ecf0f1"));
             mText = String.valueOf(mSize);
         }
     }
@@ -328,6 +358,52 @@ public class CircleImage extends View {
         if (DEBUG)
             Log.d(TAG, "onDraw");
 
+        long startTime = System.nanoTime();
+
+        // TODO: 04/07/2016 Draw CircleImageBox
+        drawCircleImageBox(canvas);
+
+        float tranX = mWidth + mPaddingLeftRight * 2;
+        canvas.translate(tranX, 0);
+        float availableWidth = getWidth() - tranX - mPaddingLeftRight;
+
+        
+        // TODO: 04/07/2016  Draw Divider ChatView
+        canvas.drawLine(0, getHeight(), getWidth() - tranX, getHeight(), mPaintDivider);
+
+        // TODO: 29/06/2016 Draw Status
+        if (mStatusText != null) {
+            float measureStatusWidth = mStatusPaint.measureText(mStatusText);
+            if (mRectBoundText == null)
+                mRectBoundText = new Rect();
+            mStatusPaint.getTextBounds(mStatusText, 0, mStatusText.length(), mRectBoundText);
+            canvas.drawText(mStatusText, availableWidth - measureStatusWidth, mTitleMarginTop + mPaddingTopBottom + mRectBoundText.height(), mStatusPaint);
+            availableWidth -= measureStatusWidth;
+        }
+
+        CharSequence str;
+        // TODO: 29/06/2016 Draw Title
+        if (mTitleText != null) {
+            str = TextUtils.ellipsize(mTitleText, mTitlePaint, availableWidth, TextUtils.TruncateAt.END);
+            if (mRectBoundText == null)
+                mRectBoundText = new Rect();
+            mTitlePaint.getTextBounds(mTitleText, 0, mTitleText.length(), mRectBoundText);
+            canvas.drawText(str, 0, str.length(), 0, mTitleMarginTop + mPaddingTopBottom + mRectBoundText.height(), mTitlePaint);
+
+        }
+
+        // TODO: 29/06/2016 Draw Content
+        if (mContentText != null) {
+            str = TextUtils.ellipsize(mContentText, mContentPaint, availableWidth, TextUtils.TruncateAt.END);
+            canvas.drawText(str, 0, str.length(), 0, getHeight() - (mPaddingTopBottom + mTitleMarginTop), mContentPaint);
+        }
+
+
+        Log.d(TAG, "onDraw: Total Time: " + (System.nanoTime() - startTime));
+    }
+
+
+    private void drawCircleImageBox(Canvas canvas) {
         canvas.translate(mPaddingLeftRight, mPaddingTopBottom);
         float radius = 0.0f;
         float tranX = 0.0f;
@@ -571,7 +647,6 @@ public class CircleImage extends View {
         }
 
         // TODO: 29/06/2016 Draw unread count message
-//
         if (mIsDrawUnRead) {
             if (mUnReadTextBound == null)
                 mUnReadTextBound = new Rect();
@@ -592,19 +667,9 @@ public class CircleImage extends View {
             canvas.translate(-(mWidth - height), 0);
         }
 
-        // TODO: 29/06/2016 Draw Status
 
-        // TODO: 29/06/2016 Draw Title
-        canvas.translate(mWidth + mTitleMarginLeft, 0);
-        canvas.drawText(mTitleText, 0, /*mPaddingTopBottom + mTitleMarginTop*/0, mTitlePaint);
-
-
-        // TODO: 29/06/2016 Draw SubTitle
-        canvas.translate(0, 100);
-        mUnReadPaintText.setColor(Color.BLACK);
-        canvas.drawText(mSubTitleText, 0, 100, mSubTitlePaint);
+        canvas.translate(-mPaddingLeftRight, -mPaddingTopBottom);
     }
-
 
     private void processAnimationBitmap3(Canvas canvas, float radius, float tranX, float tranY) {
         if (mSize == 4) {
@@ -799,5 +864,4 @@ public class CircleImage extends View {
         }
     }
 }
-
 

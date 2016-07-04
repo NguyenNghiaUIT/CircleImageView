@@ -6,7 +6,6 @@
     tools:context="com.example.nguyennghia.circleimageview.ChatViewTestActivity">
 
     <com.example.nguyennghia.circleimageview.CircleImage
-        android:background="#246463"
         android:id="@+id/ci_chat_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

@@ -7,14 +7,18 @@
     <dimen name="height_width_circle_image_view_case_2">33dp</dimen>
     <dimen name="height_width_circle_image_view_case_3">28dp</dimen>
     <dimen name="height_case_3">54.11dp</dimen>
-    <dimen name="text_unread_size">11.0dp</dimen>
+
+    <dimen name="text_unread_font_size">11.0dp</dimen>
     <dimen name="padding_unread_size">0.5dp</dimen>
     <dimen name="padding_left_right_chat_view">6dp</dimen>
     <dimen name="padding_top_bottom_chat_view">3dp</dimen>
     <dimen name="title_margin_top">3dp</dimen>
-    <dimen name="title_margin_left">3dp</dimen>
     <dimen name="chat_view_divider_size">1px</dimen>
 
     <dimen name="font_demo">11dp</dimen>
+
+    <dimen name="title_font_size">18dp</dimen>
+    <dimen name="status_font_size">12dp</dimen>
+    <dimen name="content_font_size">14dp</dimen>
 
 </resources>
