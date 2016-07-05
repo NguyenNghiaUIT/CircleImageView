@@ -24,7 +24,7 @@ public class ChatViewTestActivity extends AppCompatActivity {
         ciChatView.setTitleStyle(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         ciChatView.setContentStyle(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         ciChatView.drawBitmapAt(bm, 2, true);
-        ciChatView.drawUnRead("5");
+//        ciChatView.drawUnRead("5");
 
         ciChatView.setStatus("1 day");
         ciChatView.setTitle("Nguyễn Nghĩa, Hoàng Ánh, Hoàng Xoan");

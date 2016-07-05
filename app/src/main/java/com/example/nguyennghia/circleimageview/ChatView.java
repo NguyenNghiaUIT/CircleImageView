@@ -208,11 +208,12 @@ public class ChatView extends View {
         mUnReadPaintText = new Paint(Paint.ANTI_ALIAS_FLAG);
         mUnReadPaintText.setTextSize(mUnreadTextSize);
         mUnReadPaintText.setColor(Color.WHITE);
-        mUnReadPaintText.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        mUnReadPaintText.setTypeface(Typeface.create(mUnReadPaintText.getTypeface(), Typeface.BOLD));
 
         mTitlePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         mTitlePaint.setTextSize(mTitleTextSize);
         mTitlePaint.setColor(mTitleTextColor);
+        mTitlePaint.setTypeface(Typeface.create(mTitlePaint.getTypeface(), Typeface.BOLD));
 
         mContentPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         mContentPaint.setTextSize(mContentTextSize);
@@ -415,9 +416,7 @@ public class ChatView extends View {
         canvas.translate(tranX, 0);
         float availableWidth = getWidth() - tranX - getPaddingRight();
 
-
-//        canvas.drawLine(0, getPaddingTop(), getWidth(), getPaddingTop(), mPaintMark);
-
+        canvas.drawLine(0, getPaddingTop(), getWidth(), getPaddingTop(), mPaintMark);
 
         // TODO: 29/06/2016 Draw Status
         if (mStatusText != null) {
@@ -503,6 +502,7 @@ public class ChatView extends View {
                 canvas.translate(-tranX, tranY);
                 canvas.drawCircle(radius, radius, radius, mPaintDefault); //right bottom
                 canvas.drawText(mText, radius - (widthTextMeasure / 2), radius + mRectBoundText.height() / 2, mPaintText);
+                canvas.translate(0, -tranY);
             }
         } else if (mSize == 2) {
             radius = mWidthImage / 2.0f;

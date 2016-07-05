@@ -1,13 +1,15 @@
 package com.example.nguyennghia.circleimageview;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
+import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 /**
@@ -33,18 +35,18 @@ public class CustomView extends View {
     public CustomView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-      /*  mPaint = new TextPaint();
+       mPaint = new TextPaint();
         mPaint.setTextSize(context.getResources().getDimension(R.dimen.font_demo));
         mPaint.setColor(Color.BLACK);
-        mPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        mPaint.setTypeface(Typeface.create(mPaint.getTypeface(), Typeface.BOLD_ITALIC));
         mPaint.setAntiAlias(true);
         mPaint.setTextAlign(Paint.Align.LEFT);
 
-        mDrawable = getResources().getDrawable(R.drawable.ava1);*/
-
-        circleColorDrawable = new CircleColorDrawable(context.getResources().getColor(R.color.default_color));
-        circleBitmapDrawable = new CircleBitmapDrawable(BitmapFactory.decodeResource(getResources(), R.drawable.ava1));
-        Log.d(TAG, "onDraw: PaddingLeft " + getPaddingLeft());
+//        mDrawable = getResources().getDrawable(R.drawable.ava1);
+//
+//        circleColorDrawable = new CircleColorDrawable(context.getResources().getColor(R.color.default_color));
+//        circleBitmapDrawable = new CircleBitmapDrawable(BitmapFactory.decodeResource(getResources(), R.drawable.ava1));
+//        Log.d(TAG, "onDraw: PaddingLeft " + getPaddingLeft());
 //        circleColorDrawable.setAlpha(20);
     }
 
@@ -66,12 +68,12 @@ public class CustomView extends View {
         mDrawable.draw(canvas);*/
 
         // canvas.drawRoundRect(new RectF(0,0,300,300), 150, 150, mPaint);
-        /*CharSequence str = TextUtils.ellipsize(mText, mPaint, getWidth() - 100, TextUtils.TruncateAt.END);
-        canvas.drawText(str, 0, str.length(), 100, 100, mPaint);*/
-        canvas.translate(300, 200);
-
-        circleColorDrawable.setBounds(mCircleBound);
-        circleColorDrawable.draw(canvas);
+        CharSequence str = TextUtils.ellipsize(mText, mPaint, getWidth() - 100, TextUtils.TruncateAt.END);
+        canvas.drawText(str, 0, str.length(), 100, 100, mPaint);
+//        canvas.translate(300, 200);
+//
+//        circleColorDrawable.setBounds(mCircleBound);
+//        circleColorDrawable.draw(canvas);
 //
 //        circleBitmapDrawable.setBounds(mCircleBound);
 //        circleBitmapDrawable.draw(canvas);
