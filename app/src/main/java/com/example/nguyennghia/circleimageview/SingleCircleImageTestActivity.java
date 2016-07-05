@@ -16,11 +16,11 @@ public class SingleCircleImageTestActivity extends AppCompatActivity implements 
     private Bitmap bm3;
     private Bitmap bm4;
 
-    private CircleImage ci1;
-    private CircleImage ci2;
-    private CircleImage ci3;
-    private CircleImage ci4;
-    private CircleImage ci5;
+    private ChatView ci1;
+    private ChatView ci2;
+    private ChatView ci3;
+    private ChatView ci4;
+    private ChatView ci5;
 
     private CheckBox cb1;
     private CheckBox cb2;
@@ -40,11 +40,11 @@ public class SingleCircleImageTestActivity extends AppCompatActivity implements 
         setContentView(R.layout.activity_single_circle_image_test);
 
 
-        ci1 = (CircleImage) findViewById(R.id.ci_1);
-        ci2 = (CircleImage) findViewById(R.id.ci_2);
-        ci3 = (CircleImage) findViewById(R.id.ci_3);
-        ci4 = (CircleImage) findViewById(R.id.ci_4);
-        ci5 = (CircleImage) findViewById(R.id.ci_5);
+        ci1 = (ChatView) findViewById(R.id.ci_1);
+        ci2 = (ChatView) findViewById(R.id.ci_2);
+        ci3 = (ChatView) findViewById(R.id.ci_3);
+        ci4 = (ChatView) findViewById(R.id.ci_4);
+        ci5 = (ChatView) findViewById(R.id.ci_5);
 
 
         cb1 = (CheckBox) findViewById(R.id.cb_1);
@@ -88,8 +88,10 @@ public class SingleCircleImageTestActivity extends AppCompatActivity implements 
                 if (cb1.isChecked())
                     ci1.drawBitmapAt(bm1, 0, true);
                 else
-                    ci1.drawBitmapAt(bm1, 0, false);
-                ci1.drawUnRead("N");
+                   // ci1.drawBitmapAt(bm1, 0, false);
+                 ci1.setDrawableDefault(new CircleColorDrawable(getResources().getColor(R.color.default_color)));
+
+//                ci1.drawUnRead("N");
                 break;
             case R.id.btn_2:
                 if (cb2.isChecked()) {

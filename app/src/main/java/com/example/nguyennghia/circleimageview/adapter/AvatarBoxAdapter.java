@@ -11,7 +11,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.example.nguyennghia.circleimageview.CircleImage;
+
+import com.example.nguyennghia.circleimageview.ChatView;
+import com.example.nguyennghia.circleimageview.CircleBitmapDrawable;
+import com.example.nguyennghia.circleimageview.CircleColorDrawable;
 import com.example.nguyennghia.circleimageview.R;
 import com.example.nguyennghia.circleimageview.model.AvatarBox;
 import com.example.nguyennghia.circleimageview.model.Picture;
@@ -33,11 +36,16 @@ public class AvatarBoxAdapter extends ArrayAdapter<AvatarBox> {
     private static final String TAG = AvatarBoxAdapter.class.getSimpleName();
     private Context mContext;
     private List<AvatarBox> mAvatarBox;
+    private CircleColorDrawable mCircleColorDrawable;
+    private CircleBitmapDrawable mCircleBitmapDrawable;
 
     public AvatarBoxAdapter(Context context, List<AvatarBox> objects) {
         super(context, 0, objects);
         mContext = context;
         mAvatarBox = objects;
+        mCircleColorDrawable = new CircleColorDrawable(context.getResources().getColor(R.color.colorAccent));
+        mCircleBitmapDrawable = new CircleBitmapDrawable(BitmapFactory.decodeResource(context.getResources() ,R.drawable.default_ava));
+
     }
 
     @Override
@@ -51,7 +59,7 @@ public class AvatarBoxAdapter extends ArrayAdapter<AvatarBox> {
             LayoutInflater li = LayoutInflater.from(mContext);
             convertView = li.inflate(R.layout.author_row_item, parent, false);
             viewHolder = new ViewHolder();
-            viewHolder.ciAvaAuthor = (CircleImage) convertView.findViewById(R.id.ci_ava_author);
+            viewHolder.ciAvaAuthor = (ChatView) convertView.findViewById(R.id.ci_ava_author);
             convertView.setTag(viewHolder);
         } else {
             Log.i(TAG, "getView: " + "Tai su dung");
@@ -60,10 +68,12 @@ public class AvatarBoxAdapter extends ArrayAdapter<AvatarBox> {
         }
 
         viewHolder.ciAvaAuthor.setBitmapUrl(picture.getUrls());
-        viewHolder.ciAvaAuthor.drawUnRead("5");
+        viewHolder.ciAvaAuthor.drawUnRead("N");
         viewHolder.ciAvaAuthor.setStatus("10 minutes");
-        viewHolder.ciAvaAuthor.setTitle("Nguyễn Nghĩa, Hoàng Ánh, Nguyễn Sơn");
-        viewHolder.ciAvaAuthor.setContent("Để trưa mai t đi gửi đồ về rồi lấy luôn");
+        viewHolder.ciAvaAuthor.setDrawableDefault(mCircleColorDrawable);
+//        viewHolder.ciAvaAuthor.setDrawableDefault(mCircleBitmapDrawable);
+        viewHolder.ciAvaAuthor.setTitle("Nguyễn Nghĩa, Hoàng Ánh, Hoàng Xoan, Nguyễn Sơn");
+        viewHolder.ciAvaAuthor.setContent("Thanks for your answer, that helps a bit, but I want to have two separate windows");
 
         int size = picture.getUrls().size() > 4 ? 3 : picture.getUrls().size();
         for (int i = 0; i < size; i++) {
@@ -90,7 +100,7 @@ public class AvatarBoxAdapter extends ArrayAdapter<AvatarBox> {
 
     static class ViewHolder {
         private TextView tvAuthor;
-        private CircleImage ciAvaAuthor;
+        private ChatView ciAvaAuthor;
     }
 
     class DownloadAvatarBoxTask extends AsyncTask<Picture, Void, Void> {

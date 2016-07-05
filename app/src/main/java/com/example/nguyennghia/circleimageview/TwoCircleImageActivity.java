@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 public class TwoCircleImageActivity extends AppCompatActivity {
-    CircleImage circleImage;
+    ChatView circleImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

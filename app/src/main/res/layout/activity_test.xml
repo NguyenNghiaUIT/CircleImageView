@@ -8,5 +8,6 @@
 
     <com.example.nguyennghia.circleimageview.CustomView
         android:layout_width="300dp"
+        android:paddingLeft="30dp"
         android:layout_height="300dp" />
 </FrameLayout>

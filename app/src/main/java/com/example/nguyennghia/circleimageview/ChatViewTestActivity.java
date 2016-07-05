@@ -8,7 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 
 public class ChatViewTestActivity extends AppCompatActivity {
 
-    private CircleImage ciChatView;
+    private ChatView ciChatView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,7 +16,7 @@ public class ChatViewTestActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat_view_test);
 
         Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.ava3);
-        ciChatView = (CircleImage) findViewById(R.id.ci_chat_view);
+        ciChatView = (ChatView) findViewById(R.id.ci_chat_view);
         ciChatView.setBitmapUrls("url", "url", "url", "url", "url");
         ciChatView.drawBitmapAt(bm, 0, true);
         ciChatView.drawBitmapAt(bm, 1, false);

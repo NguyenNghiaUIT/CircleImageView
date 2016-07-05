@@ -3,14 +3,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <View
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:background="@drawable/circle_drawable"/>
+    <!--<View-->
+        <!--android:layout_width="200dp"-->
+        <!--android:layout_height="200dp"-->
+        <!--android:background="@drawable/circle_drawable"/>-->
+
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+
+        <!--android:layout_height="wrap_content" />-->
 
     <TextView
+        android:padding="10dp"
+        android:background="#5e0d0d"
+        android:text="NguyenVanNghia"
         android:layout_width="wrap_content"
-
         android:layout_height="wrap_content" />
 
 </FrameLayout>

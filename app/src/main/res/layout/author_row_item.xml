@@ -1,10 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <com.example.nguyennghia.circleimageview.CircleImage
+    <com.example.nguyennghia.circleimageview.ChatView
         android:id="@+id/ci_ava_author"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="6dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:paddingTop="6dp"
+        app:content_margin_left="12dp"
+        app:content_text_size="10sp"
+        app:divider_height="1px"
+        app:status_text_size="8sp"
+        app:status_margin_top="3dp"
+        app:title_margin_left="12dp"
+        app:title_margin_top="3dp"
+        app:title_text_size="12sp"
+        app:unread_min_height="18dp"
+        app:unread_min_width="18dp"
+        app:unread_padding="@dimen/padding_unread_size"
+        app:unread_text_size="@dimen/text_unread_font_size" />
 </RelativeLayout>
